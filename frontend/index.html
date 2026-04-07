@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Registry Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --accent-color: #0d6efd;
+            --accent-hover: #0b5ed7;
+            --card-bg: #ffffff;
+            --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1d21;
+            --bg-secondary: #212529;
+            --bg-tertiary: #2c3035;
+            --text-primary: #f8f9fa;
+            --text-secondary: #adb5bd;
+            --border-color: #495057;
+            --accent-color: #375a7f;
+            --accent-hover: #2665a5;
+            --card-bg: #2c3035;
+            --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.4);
+        }
+
+        [data-theme="ocean"] {
+            --bg-primary: #e8f4f8;
+            --bg-secondary: #d1e9f0;
+            --bg-tertiary: #b8dce6;
+            --text-primary: #1a3a4a;
+            --text-secondary: #4a6a7a;
+            --border-color: #8fc5d8;
+            --accent-color: #0077b6;
+            --accent-hover: #005f92;
+            --card-bg: #ffffff;
+            --shadow: 0 0.125rem 0.25rem rgba(0, 119, 182, 0.15);
+        }
+
+        [data-theme="forest"] {
+            --bg-primary: #f0f5f0;
+            --bg-secondary: #e2ebe2;
+            --bg-tertiary: #d1e1d1;
+            --text-primary: #1a3a1a;
+            --text-secondary: #4a6a4a;
+            --border-color: #8cb88c;
+            --accent-color: #228b22;
+            --accent-hover: #1a6b1a;
+            --card-bg: #ffffff;
+            --shadow: 0 0.125rem 0.25rem rgba(34, 139, 34, 0.15);
+        }
+
+        [data-theme="sunset"] {
+            --bg-primary: #fff5f0;
+            --bg-secondary: #ffe8dc;
+            --bg-tertiary: #ffdacc;
+            --text-primary: #3a1a1a;
+            --text-secondary: #7a4a4a;
+            --border-color: #d8a88c;
+            --accent-color: #e85d04;
+            --accent-hover: #c44d03;
+            --card-bg: #ffffff;
+            --shadow: 0 0.125rem 0.25rem rgba(232, 93, 4, 0.15);
+        }
+
+        [data-theme="cyberpunk"] {
+            --bg-primary: #0d0221;
+            --bg-secondary: #1a0533;
+            --bg-tertiary: #26074a;
+            --text-primary: #00fff5;
+            --text-secondary: #ff00ff;
+            --border-color: #7b2cbf;
+            --accent-color: #ff00ff;
+            --accent-hover: #d400d4;
+            --card-bg: #1a0533;
+            --shadow: 0 0.125rem 0.25rem rgba(255, 0, 255, 0.2);
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        * {
+            border-color: var(--border-color);
+        }
+
+        .bg-custom { background-color: var(--bg-primary) !important; }
+        .bg-custom-secondary { background-color: var(--bg-secondary) !important; }
+        .bg-custom-tertiary { background-color: var(--bg-tertiary) !important; }
+        .text-custom { color: var(--text-primary) !important; }
+        .text-custom-secondary { color: var(--text-secondary) !important; }
+        .border-custom { border-color: var(--border-color) !important; }
+        .card-custom {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .table {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        .table thead th {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        .table td {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        .table tbody tr:hover td {
+            background-color: var(--bg-secondary);
+        }
+
+        .modal-content {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        .modal-header {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        .modal-body {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        .modal-footer {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+
+        .dropdown-menu {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+        .dropdown-item {
+            color: var(--text-primary);
+        }
+        .dropdown-item:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-primary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--accent-color);
+        }
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .toast {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        .btn-accent {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
+            border-color: var(--accent-hover);
+            color: white;
+        }
+
+        .navbar {
+            background-color: var(--bg-secondary) !important;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar {
+            background-color: var(--bg-secondary);
+            min-height: calc(100vh - 56px);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+        }
+        .nav-link:hover {
+            background-color: var(--bg-tertiary);
+        }
+        .nav-link.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .dropdown-menu {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+        .dropdown-item {
+            color: var(--text-primary);
+        }
+        .dropdown-item:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-primary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--accent-color);
+        }
+
+        .table {
+            color: var(--text-primary);
+        }
+
+        .modal-content {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+        .modal-header, .modal-footer {
+            border-color: var(--border-color);
+        }
+
+        .theme-swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            display: inline-block;
+            margin: 2px;
+            transition: transform 0.2s;
+        }
+        .theme-swatch:hover {
+            transform: scale(1.1);
+        }
+
+        .repo-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .repo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .loading-spinner {
+            display: none;
+        }
+        .loading .loading-spinner {
+            display: block;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1050;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-custom-secondary">
+        <div class="container-fluid">
+            <a class="navbar-brand text-custom" href="#">
+                <i class="bi bi-box-seam"></i> Docker Registry
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-custom" href="#" onclick="showPage('dashboard')">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-custom" href="#" onclick="showPage('repositories')">
+                            <i class="bi bi-collection"></i> Repositories
+                        </a>
+                    </li>
+                    <li class="nav-item" id="adminMenu" style="display:none;">
+                        <a class="nav-link text-custom" href="#" onclick="showPage('users')">
+                            <i class="bi bi-people"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item" id="adminMenuAudit" style="display:none;">
+                        <a class="nav-link text-custom" href="#" onclick="showPage('audit')">
+                            <i class="bi bi-journal-text"></i> Audit Log
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown me-3">
+                        <button class="btn btn-outline-secondary dropdown-toggle text-custom" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-palette"></i> Theme
+                        </button>
+                        <ul class="dropdown-menu" id="themeDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('light')">
+                                <span class="theme-swatch" style="background: linear-gradient(135deg, #fff 50%, #f8f9fa 50%);"></span> Light
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('dark')">
+                                <span class="theme-swatch" style="background: linear-gradient(135deg, #1a1d21 50%, #2c3035 50%);"></span> Dark
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('ocean')">
+                                <span class="theme-swatch" style="background: linear-gradient(135deg, #0077b6 50%, #00b4d8 50%);"></span> Ocean
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('forest')">
+                                <span class="theme-swatch" style="background: linear-gradient(135deg, #228b22 50%, #90EE90 50%);"></span> Forest
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('sunset')">
+                                <span class="theme-swatch" style="background: linear-gradient(135deg, #e85d04 50%, #ffd60a 50%);"></span> Sunset
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('cyberpunk')">
+                                <span class="theme-swatch" style="background: linear-gradient(135deg, #ff00ff 50%, #00fff5 50%);"></span> Cyberpunk
+                            </a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle text-custom" type="button" data-bs-toggle="dropdown" id="userMenuBtn">
+                            <i class="bi bi-person-circle"></i> <span id="usernameDisplay">User</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" onclick="showPage('profile')">
+                                <i class="bi bi-person"></i> Profile
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-md-block sidebar collapse" id="sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-custom" href="#" onclick="showPage('dashboard')">
+                                <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-custom" href="#" onclick="showPage('repositories')">
+                                <i class="bi bi-collection me-2"></i> Repositories
+                            </a>
+                        </li>
+                        <li class="nav-item" id="sidebarAdmin" style="display:none;">
+                            <a class="nav-link text-custom" href="#" onclick="showPage('users')">
+                                <i class="bi bi-people me-2"></i> Users
+                            </a>
+                        </li>
+                        <li class="nav-item" id="sidebarAudit" style="display:none;">
+                            <a class="nav-link text-custom" href="#" onclick="showPage('audit')">
+                                <i class="bi bi-journal-text me-2"></i> Audit Log
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-10 ms-sm-auto px-4" id="mainContent">
+            </main>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="modal fade" id="loginModal" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-custom">Login to Docker Registry</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label text-custom">Username or Email</label>
+                            <input type="text" class="form-control" id="loginUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-custom">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-custom">Register New Account</label>
+                            <input type="text" class="form-control mb-2" id="registerUsername" placeholder="Username">
+                            <input type="email" class="form-control mb-2" id="registerEmail" placeholder="Email">
+                            <input type="password" class="form-control" id="registerPassword" placeholder="Password (min 8 chars)">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-accent" onclick="register()">Register</button>
+                    <button type="button" class="btn btn-accent" onclick="login()">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="repoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-custom" id="repoModalTitle">Create Repository</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="repoForm">
+                        <input type="hidden" id="repoId">
+                        <div class="mb-3">
+                            <label class="form-label text-custom">Repository Name</label>
+                            <input type="text" class="form-control" id="repoName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-custom">Namespace</label>
+                            <input type="text" class="form-control" id="repoNamespace" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-custom">Description</label>
+                            <textarea class="form-control" id="repoDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="repoPrivate">
+                            <label class="form-check-label text-custom">Private Repository</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-accent" onclick="saveRepository()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="tagModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-custom">Add Tag</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="tagForm">
+                        <input type="hidden" id="tagRepoId">
+                        <div class="mb-3">
+                            <label class="form-label text-custom">Tag Name</label>
+                            <input type="text" class="form-control" id="tagName" required placeholder="e.g., latest, v1.0.0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-custom">Digest</label>
+                            <input type="text" class="form-control" id="tagDigest" required placeholder="sha256:...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-custom">Size (bytes)</label>
+                            <input type="number" class="form-control" id="tagSize" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-accent" onclick="saveTag()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let token = localStorage.getItem('token');
+        let currentUser = null;
+        let currentPage = 'dashboard';
+        let repositories = [];
+        let allUsers = [];
+
+        const themes = ['light', 'dark', 'ocean', 'forest', 'sunset', 'cyberpunk'];
+
+        function init() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            setTheme(savedTheme);
+
+            if (!token) {
+                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                loginModal.show();
+            } else {
+                checkAuth();
+            }
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const res = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    token = data.data.token;
+                    localStorage.setItem('token', token);
+                    currentUser = data.data.user;
+                    bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                    showPage('dashboard');
+                    updateUserMenu();
+                } else {
+                    showToast(data.message, 'danger');
+                }
+            } catch (e) {
+                showToast('Login failed', 'danger');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            if (!username || !email || !password) {
+                showToast('Please fill all fields', 'warning');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('Registration successful! Please login.', 'success');
+                    document.getElementById('registerUsername').value = '';
+                    document.getElementById('registerEmail').value = '';
+                    document.getElementById('registerPassword').value = '';
+                } else {
+                    showToast(data.message, 'danger');
+                }
+            } catch (e) {
+                showToast('Registration failed', 'danger');
+            }
+        }
+
+        function logout() {
+            token = null;
+            localStorage.removeItem('token');
+            currentUser = null;
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+        }
+
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/v1/auth/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    currentUser = data.data;
+                    updateUserMenu();
+                    showPage('dashboard');
+                } else {
+                    logout();
+                }
+            } catch (e) {
+                logout();
+            }
+        }
+
+        function updateUserMenu() {
+            document.getElementById('usernameDisplay').textContent = currentUser.username;
+
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminMenu').style.display = 'block';
+                document.getElementById('adminMenuAudit').style.display = 'block';
+                document.getElementById('sidebarAdmin').style.display = 'block';
+                document.getElementById('sidebarAudit').style.display = 'block';
+            }
+        }
+
+        function showPage(page) {
+            currentPage = page;
+            const main = document.getElementById('mainContent');
+
+            switch(page) {
+                case 'dashboard':
+                    renderDashboard(main);
+                    break;
+                case 'repositories':
+                    renderRepositories(main);
+                    break;
+                case 'users':
+                    renderUsers(main);
+                    break;
+                case 'audit':
+                    renderAudit(main);
+                    break;
+                case 'profile':
+                    renderProfile(main);
+                    break;
+            }
+        }
+
+        async function renderDashboard(main) {
+            try {
+                const res = await fetch('/api/v1/stats', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+
+                main.innerHTML = `
+                    <h2 class="text-custom mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h2>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card card-custom mb-3">
+                                <div class="card-body">
+                                    <h5 class="text-custom-secondary">Total Users</h5>
+                                    <h2 class="text-custom">${data.data.users}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-custom mb-3">
+                                <div class="card-body">
+                                    <h5 class="text-custom-secondary">Repositories</h5>
+                                    <h2 class="text-custom">${data.data.repositories}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-custom mb-3">
+                                <div class="card-body">
+                                    <h5 class="text-custom-secondary">Tags</h5>
+                                    <h2 class="text-custom">${data.data.tags}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-custom mb-3">
+                                <div class="card-body">
+                                    <h5 class="text-custom-secondary">Total Size</h5>
+                                    <h2 class="text-custom">${formatBytes(data.data.total_size)}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="card card-custom">
+                                <div class="card-header bg-custom-tertiary">
+                                    <h5 class="text-custom mb-0">Quick Actions</h5>
+                                </div>
+                                <div class="card-body">
+                                    <button class="btn btn-accent me-2 mb-2" onclick="showRepoModal()">
+                                        <i class="bi bi-plus-circle"></i> New Repository
+                                    </button>
+                                    <button class="btn btn-outline-secondary mb-2" onclick="showPage('repositories')">
+                                        <i class="bi bi-collection"></i> View All Repositories
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card card-custom">
+                                <div class="card-header bg-custom-tertiary">
+                                    <h5 class="text-custom mb-0">Registry Info</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-custom"><strong>Registry API:</strong> v2</p>
+                                    <p class="text-custom"><strong>Web UI:</strong> Enabled</p>
+                                    <p class="text-custom"><strong>Auth:</strong> JWT + Sessions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                main.innerHTML = '<p class="text-danger">Failed to load dashboard</p>';
+            }
+        }
+
+        async function renderRepositories(main) {
+            try {
+                const res = await fetch('/api/v1/repositories', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                repositories = data.data;
+
+                let html = `
+                    <h2 class="text-custom mb-4"><i class="bi bi-collection"></i> Repositories</h2>
+                    <div class="mb-3">
+                        <button class="btn btn-accent" onclick="showRepoModal()">
+                            <i class="bi bi-plus-circle"></i> New Repository
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="bg-custom-tertiary">
+                                <tr>
+                                    <th class="text-custom">Name</th>
+                                    <th class="text-custom">Namespace</th>
+                                    <th class="text-custom">Description</th>
+                                    <th class="text-custom">Private</th>
+                                    <th class="text-custom">Pulls</th>
+                                    <th class="text-custom">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                if (repositories.length === 0) {
+                    html += '<tr><td colspan="6" class="text-center text-custom-secondary">No repositories found</td></tr>';
+                } else {
+                    repositories.forEach(repo => {
+                        html += `
+                            <tr>
+                                <td class="text-custom">${repo.name}</td>
+                                <td class="text-custom">${repo.namespace}</td>
+                                <td class="text-custom">${repo.description || '-'}</td>
+                                <td class="text-custom">${repo.is_private ? '<i class="bi bi-lock-fill"></i>' : '<i class="bi bi-unlock"></i>'}</td>
+                                <td class="text-custom">${repo.pull_count}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="viewTags(${repo.id}, '${repo.name}')">
+                                        <i class="bi bi-tags"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editRepository(${repo.id})">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteRepository(${repo.id})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                html += '</tbody></table></div>';
+                main.innerHTML = html;
+            } catch (e) {
+                main.innerHTML = '<p class="text-danger">Failed to load repositories</p>';
+            }
+        }
+
+        async function renderUsers(main) {
+            if (currentUser.role !== 'admin') {
+                main.innerHTML = '<p class="text-danger">Access denied</p>';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/v1/users', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                allUsers = data.data;
+
+                let html = `
+                    <h2 class="text-custom mb-4"><i class="bi bi-people"></i> User Management</h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="bg-custom-tertiary">
+                                <tr>
+                                    <th class="text-custom">Username</th>
+                                    <th class="text-custom">Email</th>
+                                    <th class="text-custom">Role</th>
+                                    <th class="text-custom">Active</th>
+                                    <th class="text-custom">Created</th>
+                                    <th class="text-custom">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                allUsers.forEach(user => {
+                    html += `
+                        <tr>
+                            <td class="text-custom">${user.username}</td>
+                            <td class="text-custom">${user.email}</td>
+                            <td class="text-custom"><span class="badge bg-${user.role === 'admin' ? 'danger' : 'primary'}">${user.role}</span></td>
+                            <td class="text-custom">${user.is_active ? '<i class="bi bi-check-circle text-success"></i>' : '<i class="bi bi-x-circle text-danger"></i>'}</td>
+                            <td class="text-custom">${new Date(user.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteUser(${user.id})" ${user.id === currentUser.id ? 'disabled' : ''}>
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table></div>';
+                main.innerHTML = html;
+            } catch (e) {
+                main.innerHTML = '<p class="text-danger">Failed to load users</p>';
+            }
+        }
+
+        async function renderAudit(main) {
+            if (currentUser.role !== 'admin') {
+                main.innerHTML = '<p class="text-danger">Access denied</p>';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/v1/audit', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                const entries = data.data;
+
+                let html = `
+                    <h2 class="text-custom mb-4"><i class="bi bi-journal-text"></i> Audit Log</h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="bg-custom-tertiary">
+                                <tr>
+                                    <th class="text-custom">User</th>
+                                    <th class="text-custom">Action</th>
+                                    <th class="text-custom">Resource</th>
+                                    <th class="text-custom">IP Address</th>
+                                    <th class="text-custom">Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                if (entries.length === 0) {
+                    html += '<tr><td colspan="5" class="text-center text-custom-secondary">No audit entries</td></tr>';
+                } else {
+                    entries.forEach(entry => {
+                        html += `
+                            <tr>
+                                <td class="text-custom">${entry.username || 'System'}</td>
+                                <td class="text-custom">${entry.action}</td>
+                                <td class="text-custom">${entry.resource || '-'}</td>
+                                <td class="text-custom">${entry.ip_address || '-'}</td>
+                                <td class="text-custom">${new Date(entry.created_at).toLocaleString()}</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                html += '</tbody></table></div>';
+                main.innerHTML = html;
+            } catch (e) {
+                main.innerHTML = '<p class="text-danger">Failed to load audit log</p>';
+            }
+        }
+
+        function renderProfile(main) {
+            main.innerHTML = `
+                <h2 class="text-custom mb-4"><i class="bi bi-person"></i> Profile</h2>
+                <div class="card card-custom" style="max-width: 500px;">
+                    <div class="card-body">
+                        <p class="text-custom"><strong>Username:</strong> ${currentUser.username}</p>
+                        <p class="text-custom"><strong>Email:</strong> ${currentUser.email}</p>
+                        <p class="text-custom"><strong>Role:</strong> ${currentUser.role}</p>
+                        <p class="text-custom"><strong>Member Since:</strong> ${new Date(currentUser.created_at).toLocaleDateString()}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showRepoModal(id = null) {
+            const modal = new bootstrap.Modal(document.getElementById('repoModal'));
+            const title = document.getElementById('repoModalTitle');
+
+            if (id) {
+                const repo = repositories.find(r => r.id === id);
+                title.textContent = 'Edit Repository';
+                document.getElementById('repoId').value = repo.id;
+                document.getElementById('repoName').value = repo.name;
+                document.getElementById('repoNamespace').value = repo.namespace;
+                document.getElementById('repoDescription').value = repo.description || '';
+                document.getElementById('repoPrivate').checked = repo.is_private;
+            } else {
+                title.textContent = 'Create Repository';
+                document.getElementById('repoForm').reset();
+                document.getElementById('repoId').value = '';
+            }
+
+            modal.show();
+        }
+
+        async function saveRepository() {
+            const id = document.getElementById('repoId').value;
+            const data = {
+                name: document.getElementById('repoName').value,
+                namespace: document.getElementById('repoNamespace').value,
+                description: document.getElementById('repoDescription').value,
+                is_private: document.getElementById('repoPrivate').checked
+            };
+
+            const url = id ? `/api/v1/repositories/${id}` : '/api/v1/repositories';
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    showToast('Repository saved successfully', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('repoModal')).hide();
+                    showPage('repositories');
+                } else {
+                    showToast('Failed to save repository', 'danger');
+                }
+            } catch (e) {
+                showToast('Error saving repository', 'danger');
+            }
+        }
+
+        async function editRepository(id) {
+            showRepoModal(id);
+        }
+
+        async function deleteRepository(id) {
+            if (!confirm('Are you sure you want to delete this repository?')) return;
+
+            try {
+                const res = await fetch(`/api/v1/repositories/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.ok) {
+                    showToast('Repository deleted', 'success');
+                    showPage('repositories');
+                } else {
+                    showToast('Failed to delete repository', 'danger');
+                }
+            } catch (e) {
+                showToast('Error deleting repository', 'danger');
+            }
+        }
+
+        async function deleteUser(id) {
+            if (!confirm('Are you sure you want to delete this user?')) return;
+
+            try {
+                const res = await fetch(`/api/v1/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.ok) {
+                    showToast('User deleted', 'success');
+                    showPage('users');
+                } else {
+                    showToast('Failed to delete user', 'danger');
+                }
+            } catch (e) {
+                showToast('Error deleting user', 'danger');
+            }
+        }
+
+        async function viewTags(repoId, repoName) {
+            try {
+                const res = await fetch(`/api/v1/repositories/${repoId}/tags`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                const tags = data.data;
+
+                let html = `
+                    <div class="modal fade" id="tagsModal" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title text-custom">Tags for ${repoName}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <button class="btn btn-accent btn-sm mb-3" onclick="showTagModal(${repoId})">
+                                        <i class="bi bi-plus"></i> Add Tag
+                                    </button>
+                                    <table class="table">
+                                        <thead class="bg-custom-tertiary">
+                                            <tr>
+                                                <th class="text-custom">Tag</th>
+                                                <th class="text-custom">Digest</th>
+                                                <th class="text-custom">Size</th>
+                                                <th class="text-custom">Created</th>
+                                                <th class="text-custom">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                `;
+
+                if (tags.length === 0) {
+                    html += '<tr><td colspan="5" class="text-center text-custom-secondary">No tags found</td></tr>';
+                } else {
+                    tags.forEach(tag => {
+                        html += `
+                            <tr>
+                                <td class="text-custom"><span class="badge bg-primary">${tag.name}</span></td>
+                                <td class="text-custom"><small>${tag.digest.substring(0, 16)}...</small></td>
+                                <td class="text-custom">${formatBytes(tag.size)}</td>
+                                <td class="text-custom">${new Date(tag.created_at).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTag(${tag.id}, ${repoId})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                html += '</tbody></table></div></div></div></div>';
+                
+                const existing = document.getElementById('tagsModal');
+                if (existing) existing.remove();
+                
+                document.body.insertAdjacentHTML('beforeend', html);
+                const modal = new bootstrap.Modal(document.getElementById('tagsModal'));
+                modal.show();
+            } catch (e) {
+                showToast('Failed to load tags', 'danger');
+            }
+        }
+
+        function showTagModal(repoId) {
+            document.getElementById('tagRepoId').value = repoId;
+            document.getElementById('tagForm').reset();
+            const modal = new bootstrap.Modal(document.getElementById('tagModal'));
+            modal.show();
+        }
+
+        async function saveTag() {
+            const repoId = document.getElementById('tagRepoId').value;
+            const data = {
+                name: document.getElementById('tagName').value,
+                digest: document.getElementById('tagDigest').value,
+                size: parseInt(document.getElementById('tagSize').value)
+            };
+
+            try {
+                const res = await fetch(`/api/v1/repositories/${repoId}/tags`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    showToast('Tag created successfully', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('tagModal')).hide();
+                } else {
+                    showToast('Failed to create tag', 'danger');
+                }
+            } catch (e) {
+                showToast('Error creating tag', 'danger');
+            }
+        }
+
+        async function deleteTag(tagId, repoId) {
+            if (!confirm('Are you sure you want to delete this tag?')) return;
+
+            try {
+                const res = await fetch(`/api/v1/repositories/${repoId}/tags/${tagId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.ok) {
+                    showToast('Tag deleted', 'success');
+                    viewTags(repoId);
+                } else {
+                    showToast('Failed to delete tag', 'danger');
+                }
+            } catch (e) {
+                showToast('Error deleting tag', 'danger');
+            }
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0 show`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        init();
+    </script>
+</body>
+</html>

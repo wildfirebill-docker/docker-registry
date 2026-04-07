@@ -1,0 +1,24 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+
+database:
+  driver: sqlite
+  source: /data/registry.db
+
+auth:
+  jwt_secret: "change-this-secret-in-production"
+  session_secret: "change-this-session-secret"
+  https_enabled: false
+
+admin:
+  username: admin
+  password: admin123
+  email: admin@localhost
+
+logging:
+  level: info
+
+registry:
+  storage_path: /data/registry
+  max_upload_size: 1073741824

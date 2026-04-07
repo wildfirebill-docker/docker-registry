@@ -1,0 +1,11 @@
+backend
+!backend/go.mod
+!backend/go.sum
+!backend/*.go
+frontend
+!frontend/index.html
+docker
+config
+docs
+README.md
+Makefile
