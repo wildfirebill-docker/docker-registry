@@ -26,11 +26,15 @@ services:
     image: docker-registry-mariadb:latest
     container_name: docker-registry-mariadb-app
     ports:
-      - "8080:8080"
+      - "8082:8080"
     environment:
       - PORT=8080
       - DB_DRIVER=mysql
-      - DB_SOURCE=root:registry_root_password@tcp(mariadb:3306)/registry
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=registry_root_password
+      - DB_NAME=registry
       - JWT_SECRET=docker-registry-secret-key-change-in-production
       - ADMIN_USERNAME=admin
       - ADMIN_PASSWORD=admin123

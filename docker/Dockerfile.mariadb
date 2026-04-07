@@ -1,17 +1,20 @@
-FROM golang:1.22-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 WORKDIR /build
 
-RUN apk add --no-cache gcc musl-dev
+RUN apk add --no-cache gcc musl-dev git
 
-COPY go.mod go.sum ./
+COPY backend/go.mod ./
 RUN go mod download
 
-COPY . .
+COPY backend/ ./
+COPY frontend/index.html ./
+
+RUN go mod tidy
 
 RUN CGO_ENABLED=1 GOOS=linux go build -o registry -ldflags="-s -w" .
 
-FROM alpine:3.19
+FROM alpine:3.21
 
 RUN apk add --no-cache \
     ca-certificates \
@@ -24,7 +27,7 @@ RUN adduser -D -u 1000 appuser
 WORKDIR /app
 
 COPY --from=builder /build/registry .
-COPY --from=builder /build/frontend/index.html ./static/
+COPY --from=builder /build/index.html ./static/
 
 RUN mkdir -p /data
 
@@ -36,7 +39,6 @@ EXPOSE 8080
 
 ENV PORT=8080
 ENV DB_DRIVER=mysql
-ENV DB_SOURCE=root:password@tcp(mariadb:3306)/registry
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8080/api/v1/health || exit 1
