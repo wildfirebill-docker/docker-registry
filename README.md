@@ -22,7 +22,7 @@ A modern, private Docker registry with multi-user support, featuring a beautiful
 
 ## Quick Start
 
-### Docker Compose (SQLite Version)
+### Docker Compose (SQLite Version) https://github.com/wildfirebill-docker/docker-registry-sqlite
 
 ```bash
 cd docker
