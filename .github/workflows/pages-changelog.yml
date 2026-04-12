@@ -1,0 +1,73 @@
+name: Deploy Changelog to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          cat << 'EOF' > CHANGELOG.md
+          # Changelog
+
+          All notable changes to this project will be documented in this file.
+
+          ## Recent Changes
+
+          EOF
+
+          git log --format='%h - %s (%an)' HEAD~20..HEAD | while read line; do
+            echo "- $line" >> CHANGELOG.md
+          done
+
+          {
+            echo ""
+            echo "## Detailed Commit History"
+            echo ""
+          } >> CHANGELOG.md
+
+          git log --format='### %h - %s' HEAD~50..HEAD | while read line; do
+            echo "$line" >> CHANGELOG.md
+            hash=$(echo "$line" | awk '{print $2}')
+            git log -1 --format='**Date:** %ad%n%n**Author:** %an%n%n**Description:**%n%n%b' --date=short "$hash" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+          done
+
+          {
+            echo ""
+            echo "## Fixes Summary"
+            echo ""
+            echo "| Commit | Description |"
+            echo "|--------|-------------|"
+          } >> CHANGELOG.md
+
+          git log --format='| %h | %s |' HEAD~20..HEAD | grep -iE 'fix|bug|patch|correct' >> CHANGELOG.md || true
+
+          cat CHANGELOG.md
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: CHANGELOG.md
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
